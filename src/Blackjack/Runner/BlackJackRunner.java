@@ -1,26 +1,34 @@
 package Blackjack.Runner;
 
+import Blackjack.Dealer;
 import Blackjack.Gambler;
-import Blackjack.Player;
+import Blackjack.Game;
+
+
 
 public class BlackJackRunner {
     public static void main(String[] args) {
 
-        //1. Gambler first move
-        Player.movesGambler();
+        //1. Create instance of Gambler
+        Game gambler = new Gambler();
 
-        //2. Dealer first move
-        Player.firstMoveDealer();
+        //2. Gambler's first move
+        gambler.firstMove();
 
-        //3. Gambler decision to hit or stay
-        Gambler gambler = new Gambler();
-        gambler.decision();
+        //3. Create instance of Dealer
+        Dealer dealer = new Dealer();
 
-        //4. Dealer next moves
-        Player.moveDealer();
+        //4. Dealer's first move
+        dealer.firstMove();
 
-        //5. Comparison players
-        Player.comparison();
+        //5. Gambler's decisionChoiceToHitOrStay to hit or stay
+        gambler.decisionChoiceToHitOrStay();
+
+        //6. Dealer's decisionChoiceToHitOrStay to hit or stay
+        dealer.decisionChoiceToHitOrStay();
+
+        //7. Checking who's win
+        dealer.whoWonComparison();
 
     }
 }
