@@ -2,7 +2,7 @@ package Blackjack;
 
 public interface Player {
 
-    void firstMove();
+    void move();
 
     void decisionChoiceToHitOrStay();
 

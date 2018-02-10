@@ -4,20 +4,20 @@ import java.util.Scanner;
 
 public class Gambler implements Player {
 
-    private static int gamblerPoints;
-    static StatusRound hitOrStayDecision;
+    private StatusRoundManager hitOrStayDecision = new StatusRoundManager();
+    private static DeckOfCards gamblerCards = new DeckOfCards();
 
-    public static int getGamblerPoints() {
-        return gamblerPoints;
+    protected DeckOfCards getGamblerCards() {
+        return gamblerCards;
     }
 
+
     @Override
-    public void firstMove() {
-        System.out.print( "You get: " + Game.drawnCard() );
-        gamblerPoints = Game.getDrawledCard();
-        System.out.println( " and " + Game.drawnCard() );
-        gamblerPoints += Game.getDrawledCard();
-        System.out.println( "You total is: " + gamblerPoints + "\n" );
+    public void move() {
+        gamblerCards.draw( Game.playingDeck );
+        gamblerCards.draw( Game.playingDeck );
+        System.out.println( "You get: " + gamblerCards.toString() );
+        System.out.println( "You total value is: " + gamblerCards.cardsValue() + "\n" );
     }
 
     @Override
@@ -29,29 +29,41 @@ public class Gambler implements Player {
         decisionInput = in.nextLine();
         hitOrStayDecision.setKeyboardInput( decisionInput );
 
-        if (hitChoosing()) {
+        doingNextMove();
+        stoppedDoingNextMove();
+        incorrectInput();
+    }
+
+    private void doingNextMove() {
+        if (hitOrStayDecision.isHitting()) {
             hittingNextCard();
             decisionChoiceToHitOrStay();
-        } else if (stayChoosing()) {
-            return;
         }
     }
 
     @Override
     public void hittingNextCard() {
+        System.out.println();
         System.out.println( "You chose to HIT" );
-        System.out.println( "You drew " + Game.drawnCard() );
-        gamblerPoints += Game.getDrawledCard();
-        System.out.println( "You totally have: " + gamblerPoints + "\n" );
+        gamblerCards.draw( Game.playingDeck );
+        System.out.println( "You drew: " + gamblerCards.getCard( gamblerCards.deckSize() - 1 ) );
+        System.out.println( "You totally have points: " + gamblerCards.cardsValue() + "\n" );
     }
 
-    boolean hitChoosing() {
-
-        if ("hit".equals( hitOrStayDecision.getKeyboardInput() )) return true;
-        else return false;
+    private void stoppedDoingNextMove() {
+        if (hitOrStayDecision.isStaying()) {
+            System.out.println( hitOrStayDecision.getKeyboardInput() );
+            return;
+        }
     }
 
-    private boolean stayChoosing() {
-        return "stay".equals( hitOrStayDecision.getKeyboardInput() );
+    private void incorrectInput() {
+        if (hitOrStayDecision.isIncorrectInput()) {
+            System.out.println( hitOrStayDecision.getKeyboardInput() );
+            System.exit( 0 );
+        }
     }
+
+
 }
+

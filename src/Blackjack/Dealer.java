@@ -3,25 +3,27 @@ package Blackjack;
 
 public class Dealer implements Player {
 
-    private static int dealerPoints;
+   private static DeckOfCards dealerCards = new DeckOfCards();
 
-    static int getDealerPoints() {
-        return dealerPoints;
+    static DeckOfCards getDealerCards() {
+        return dealerCards;
     }
 
+
+
     @Override
-    public void firstMove() {
-        System.out.println( "The dealer has: " + Game.drawnCard() + " showing, and hidden, too." );
-        dealerPoints = Game.getDrawledCard();
-        dealerPoints += Game.drawnCard();
+    public void move() {
+        dealerCards.draw( Game.playingDeck );
+        dealerCards.draw( Game.playingDeck );
+        System.out.println( "The dealer has: " + dealerCards.getCard( dealerCards.deckSize()-1 ) + " showing, and hidden, too." );
     }
 
     @Override
     public void decisionChoiceToHitOrStay() {
-        if (lessThanSeventeenPoints()) {
+        if (isLessThanSeventeenPoints()) {
             hittingNextCard();
             decisionChoiceToHitOrStay();
-        } else if (greaterOrEqualThanSeventeenPoints()) {
+        } else if (isGreaterOrEqualThanSeventeenPoints()) {
             stayDecision();
         }
     }
@@ -29,22 +31,23 @@ public class Dealer implements Player {
     @Override
     public void hittingNextCard() {
         System.out.println( "\n Dealer choose to HIT" );
-        System.out.println( "He drew a " + Game.drawnCard() );
-        dealerPoints += Game.getDrawledCard();
-        System.out.println( "His total is " + dealerPoints );
+        dealerCards.draw( Game.playingDeck );
+        System.out.println( "He drew a " + dealerCards.getCard( dealerCards.deckSize()-1 ) );
+        System.out.println( "His total value is " + dealerCards.cardsValue() );
 
     }
 
     private void stayDecision() {
+        System.out.println();
         System.out.println( "Dealer choose to stays.\n" );
-        System.out.println( "His total is " + dealerPoints );
+        System.out.println( "His total is " + dealerCards.cardsValue() );
     }
 
-    private boolean lessThanSeventeenPoints() {
-        return dealerPoints < 17;
+    private boolean isLessThanSeventeenPoints() {
+        return dealerCards.cardsValue() < 17;
     }
 
-    private boolean greaterOrEqualThanSeventeenPoints() {
-        return dealerPoints >= 17;
+    private boolean isGreaterOrEqualThanSeventeenPoints() {
+        return dealerCards.cardsValue() >= 17;
     }
 }

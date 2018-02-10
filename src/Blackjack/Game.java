@@ -1,31 +1,64 @@
 package Blackjack;
 
-import java.util.Random;
-import java.util.Scanner;
+
+import java.io.IOException;
 
 public class Game {
 
-    private static int drawledCard;
-    static StatusRound hitOrStayDecision;
-    Player gambler = new Gambler();
-    Player dealer = new Dealer();
+    private Gambler gambler = new Gambler();
+    private Dealer dealer = new Dealer();
+    static DeckOfCards playingDeck = new DeckOfCards();
 
-    static int drawnCard() {
-        Random random = new Random();
-        return drawledCard = 1 + random.nextInt( 10 );
+    public void preparingTable() throws IOException {
+        playingDeck.currentDeck();
     }
 
-
-    public static int getDrawledCard() {
-        return drawledCard;
+    public void addPlayer(Dealer player) {
+        this.dealer = player;
     }
 
-    public void condition() {
-        if (dealerHasExceedTwentyOne()) {
+    public void addPlayer(Gambler player) {
+        this.gambler = player;
+    }
+
+    public void playersMoves() {
+        gambler.move();
+        dealer.move();
+    }
+
+    public void playersDecisions() {
+        gambler.decisionChoiceToHitOrStay();
+        dealer.decisionChoiceToHitOrStay();
+    }
+
+    public void whoWonTheGame() {
+        condition();
+        dealerWinCondition();
+        playerWinCondition();
+        drawCondition();
+    }
+
+    private void condition() {
+        if (isDealerHasExceedTwentyOne()) {
             dealerLose();
-        } else if (gamblerHasExceedTwentyOne()) {
+        } else if (isGamblerHasExceedTwentyOne()) {
             playerLose();
         }
+    }
+
+    private boolean isDealerHasExceedTwentyOne() {
+        return Dealer.getDealerCards().cardsValue() > 21;
+    }
+
+    private void dealerLose() {
+        gameResults();
+        System.out.println( "Dealer lose, you win!" );
+        System.exit( 0 );
+
+    }
+
+    private boolean isGamblerHasExceedTwentyOne() {
+        return gambler.getGamblerCards().cardsValue() > 21;
     }
 
     private void playerLose() {
@@ -34,10 +67,34 @@ public class Game {
         System.exit( 0 );
     }
 
-    private void dealerLose() {
-        gameResults();
-        System.out.println( "Dealer lose, you win!" );
-        System.exit( 0 );
+    private void dealerWinCondition() {
+        if (isDealerHasBetterCards()) {
+            playerLose();
+        }
+    }
+
+    private boolean isDealerHasBetterCards() {
+        return Dealer.getDealerCards().cardsValue() > gambler.getGamblerCards().cardsValue();
+    }
+
+    private void playerWinCondition() {
+        if (isDealerHasWorseCards()) {
+            dealerLose();
+        }
+    }
+
+    private boolean isDealerHasWorseCards() {
+        return Dealer.getDealerCards().cardsValue() < gambler.getGamblerCards().cardsValue();
+    }
+
+    private void drawCondition() {
+        if (isPlayersHasEqualsCards()) {
+            draw();
+        }
+    }
+
+    private boolean isPlayersHasEqualsCards() {
+        return Dealer.getDealerCards().cardsValue() == gambler.getGamblerCards().cardsValue();
     }
 
     private void draw() {
@@ -47,51 +104,9 @@ public class Game {
     }
 
     private void gameResults() {
-        System.out.println( "Your total: " + Gambler.getGamblerPoints() );
-        System.out.println( "Dealer's total: " + Dealer.getDealerPoints() );
-    }
-
-    public void whoWonTheGame() {
-        condition();
-        if (dealerHasBetterCards()) {
-            playerLose();
-        } else if (dealerHasWorseCards()) {
-            dealerLose();
-        } else if (dealerHasEqualsCards()) {
-            draw();
-        }
-    }
-
-    private boolean dealerHasBetterCards() {
-        return Dealer.getDealerPoints() > Gambler.getGamblerPoints();
-    }
-
-    private boolean dealerHasWorseCards() {
-        return Dealer.getDealerPoints() < Gambler.getGamblerPoints();
-    }
-
-    private boolean dealerHasEqualsCards() {
-        return Dealer.getDealerPoints() == Gambler.getGamblerPoints();
-    }
-
-    private boolean dealerHasExceedTwentyOne() {
-        return Dealer.getDealerPoints() > 21;
-    }
-
-    private boolean gamblerHasExceedTwentyOne() {
-        return Gambler.getGamblerPoints() > 21;
-    }
-
-    private void decisionChoiceToHitOrStay() {
-        Scanner in = new Scanner( System.in );
-        System.out.print( "Would you like HIT or STAY? " );
-        String decisionInput = in.nextLine();
-        hitOrStayDecision.setKeyboardInput( decisionInput );
-    }
-
-    public void addPlayer(Player player) {
-        gambler = player;
-        dealer = player;
+        System.out.println();
+        System.out.println( "Your total: " + gambler.getGamblerCards().cardsValue() );
+        System.out.println( "Dealer's total: " + Dealer.getDealerCards().cardsValue() );
     }
 
 }
